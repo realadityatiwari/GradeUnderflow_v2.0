@@ -1,0 +1,23 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "python.formatting.provider": "none",
+  "python.linting.enabled": true,
+  "python.linting.ruffEnabled": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "python.defaultInterpreterPath": "apps/api/venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "apps/api",
+    "apps/api/venv/Lib/site-packages"
+  ]
+}
