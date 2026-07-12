@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface EmptyStateProps {
+interface DashboardEmptyStateProps {
   icon: ReactNode;
   title: string;
   description: string;
@@ -9,7 +9,7 @@ interface EmptyStateProps {
   className?: string;
 }
 
-export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
+export function DashboardEmptyState({ icon, title, description, action, className }: DashboardEmptyStateProps) {
   return (
     <div className={cn("grid min-h-[300px] place-items-center px-6 py-10", className)}>
       <div className="max-w-sm text-center">

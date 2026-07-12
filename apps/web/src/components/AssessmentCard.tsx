@@ -1,7 +1,6 @@
 import { Pencil, Trash, FileText, CheckCircle2, Clock, CircleDashed } from "lucide-react";
 import { Assessment, AssessmentStatus } from "@/lib/services/assessment";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -19,107 +18,116 @@ interface AssessmentCardProps {
   onDelete: (id: string) => void;
 }
 
+const statusConfig: Record<string, { label: string; icon: React.ReactNode; style: string }> = {
+  [AssessmentStatus.CHECKED]: {
+    label: "Graded",
+    icon: <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />,
+    style: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
+  },
+  [AssessmentStatus.SUBMITTED]: {
+    label: "Submitted",
+    icon: <FileText className="h-3.5 w-3.5 text-sky-400" />,
+    style: "border-sky-300/20 bg-sky-300/10 text-sky-200",
+  },
+  [AssessmentStatus.IN_PROGRESS]: {
+    label: "In Progress",
+    icon: <Clock className="h-3.5 w-3.5 text-amber-400" />,
+    style: "border-amber-300/20 bg-amber-300/10 text-amber-200",
+  },
+  [AssessmentStatus.NOT_STARTED]: {
+    label: "Not Started",
+    icon: <CircleDashed className="h-3.5 w-3.5 text-zinc-500" />,
+    style: "border-zinc-300/15 bg-zinc-300/[0.08] text-zinc-300",
+  },
+};
+
 export function AssessmentCard({ assessment, semesterId, onEdit, onDelete }: AssessmentCardProps) {
   const result = assessment.result;
   const status = result?.status || AssessmentStatus.NOT_STARTED;
-  
-  const getStatusIcon = () => {
-    switch (status) {
-      case AssessmentStatus.CHECKED:
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case AssessmentStatus.SUBMITTED:
-        return <FileText className="h-4 w-4 text-blue-500" />;
-      case AssessmentStatus.IN_PROGRESS:
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      default:
-        return <CircleDashed className="h-4 w-4 text-muted-foreground" />;
-    }
-  };
-
-  const getStatusLabel = () => {
-    switch (status) {
-      case AssessmentStatus.CHECKED:
-        return "Graded";
-      case AssessmentStatus.SUBMITTED:
-        return "Submitted";
-      case AssessmentStatus.IN_PROGRESS:
-        return "In Progress";
-      default:
-        return "Not Started";
-    }
-  };
+  const cfg = statusConfig[status] ?? statusConfig[AssessmentStatus.NOT_STARTED];
 
   return (
-    <Card className="flex flex-col transition-shadow hover:shadow-md">
-      <CardHeader className="flex flex-row items-start justify-between pb-2">
-        <div className="space-y-1">
-          <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="text-xs">
+    <article className="group relative min-h-[188px] overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/65 p-5 shadow-[0_18px_45px_-28px_rgba(0,0,0,0.95)] transition-all duration-300 hover:-translate-y-1 hover:border-white/[0.16] hover:bg-zinc-900/80">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-fuchsia-400 to-pink-500" />
+      <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/[0.025] transition-transform duration-500 group-hover:scale-125" />
+
+      <div className="relative flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="rounded-md border border-white/[0.08] bg-zinc-950/45 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.11em] text-zinc-400">
               {assessment.assessment_category}
-            </Badge>
-            <div className="flex items-center text-xs text-muted-foreground gap-1">
-              {getStatusIcon()}
-              <span>{getStatusLabel()}</span>
-            </div>
+            </span>
+            <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.1em] inline-flex items-center gap-1 ${cfg.style}`}>
+              {cfg.icon}
+              {cfg.label}
+            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 -ml-0.5 text-zinc-500 hover:text-zinc-200">
+                  <MoreVertical className="h-3.5 w-3.5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit(assessment)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit / View
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onDelete(assessment.id)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <CardTitle className="text-lg font-bold pt-1 line-clamp-2" title={assessment.title}>
+          <h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] text-zinc-50 line-clamp-2" title={assessment.title}>
             {assessment.title}
-          </CardTitle>
+          </h3>
         </div>
-        <div className="flex items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2">
-                <MoreVertical className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(assessment)}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit / View
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDelete(assessment.id)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-4">
-        <div className="flex items-center justify-between text-sm">
-          <div className="text-muted-foreground">
+      </div>
+
+      <div className="relative mt-5">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs font-medium text-zinc-400">
             {status === AssessmentStatus.CHECKED ? (
-              <span className="font-semibold text-foreground">
-                {result?.obtained_marks ?? "-"}/{assessment.max_marks} Marks
+              <span className="font-semibold text-zinc-100 tabular-nums">
+                {result?.obtained_marks ?? "-"}/{assessment.max_marks} <span className="text-zinc-500">Marks</span>
               </span>
             ) : (
               <span>Max: {assessment.max_marks} Marks</span>
             )}
-          </div>
+          </p>
           {assessment.weightage !== null && assessment.weightage !== undefined && (
-            <div className="text-muted-foreground">
-              {assessment.weightage}% Weight
-            </div>
+            <span className="text-xs font-semibold text-zinc-400">{assessment.weightage}% Weight</span>
           )}
         </div>
-        
-        {semesterId && status !== AssessmentStatus.CHECKED && (
-          <div className="mt-4 flex justify-end">
-             <WhatIfDialog 
-                semesterId={semesterId} 
-                assessmentId={assessment.id} 
-                currentMarks={result?.obtained_marks || null} 
-                maxMarks={assessment.max_marks} 
-                title={assessment.title}
-             />
-          </div>
+      </div>
+
+      {semesterId && status !== AssessmentStatus.CHECKED && (
+        <div className="relative mt-4 flex items-center justify-end">
+          <WhatIfDialog
+            semesterId={semesterId}
+            assessmentId={assessment.id}
+            currentMarks={result?.obtained_marks || null}
+            maxMarks={assessment.max_marks}
+            title={assessment.title}
+          />
+        </div>
+      )}
+
+      <div className="relative mt-4 flex min-h-5 items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">
+        {status === AssessmentStatus.CHECKED ? (
+          <span className="text-zinc-500">Assessment complete</span>
+        ) : (
+          <span>Pending review</span>
         )}
-      </CardContent>
-    </Card>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-300">
+          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+        </svg>
+      </div>
+    </article>
   );
 }

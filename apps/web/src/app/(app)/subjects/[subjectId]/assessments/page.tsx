@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, use } from "react";
-import { PlusCircle, Loader2, ArrowLeft, Target } from "lucide-react";
+import { PlusCircle, ArrowLeft, Target, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Subject, subjectService } from "@/lib/services/subject";
 import { Assessment, AssessmentType, assessmentService } from "@/lib/services/assessment";
@@ -14,7 +14,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { EmptyState } from "@/components/Shell/EmptyState";
+import { DashboardContainer } from "@/components/ds/DashboardContainer";
+import { DashboardEmptyState } from "@/components/ds/DashboardEmptyState";
+import { DashboardSurface } from "@/components/ds/DashboardSurface";
 import { EvaluationSection } from "@/components/EvaluationSection";
 import { PredictionCard } from "@/components/Prediction/PredictionCard";
 
@@ -33,7 +35,6 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Dialog State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
 
@@ -99,17 +100,17 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
     if (filtered.length === 0) return null;
 
     return (
-      <AccordionItem value={type} key={type} className="border-b-0 mb-4 bg-card rounded-lg border shadow-sm px-4">
-        <AccordionTrigger className="hover:no-underline font-semibold text-lg py-4">
+      <AccordionItem value={type} key={type}>
+        <AccordionTrigger className="px-5 py-4">
           <div className="flex items-center gap-2">
             {TYPE_LABELS[type]}
-            <span className="text-muted-foreground text-sm font-normal bg-secondary px-2 py-0.5 rounded-full">
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2 py-0.5 text-[10px] font-semibold text-zinc-400">
               {filtered.length}
             </span>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="pt-2 pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <AccordionContent>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filtered.map(assessment => (
               <AssessmentCard 
                 key={assessment.id}
@@ -127,57 +128,64 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
 
   if (isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardContainer>
+        <div className="flex h-[50vh] items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
+        </div>
+      </DashboardContainer>
     );
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-6">
-        <Button variant="ghost" asChild className="-ml-4 text-muted-foreground mb-2">
+    <DashboardContainer>
+      <div className="mb-1">
+        <Button variant="ghost" asChild className="-ml-3 text-zinc-400 hover:text-zinc-200">
           <Link href={subject ? `/semesters/${subject.semester_id}/subjects` : "/semesters"}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
             Back to Subjects
           </Link>
         </Button>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Academic Activity Engine
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {subject ? `${subject.code} - ${subject.name}` : "Manage assessments"}
-          </p>
+      <header className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[radial-gradient(circle_at_84%_20%,rgba(124,140,255,0.16),transparent_32%),rgba(9,9,11,0.62)] px-5 py-5 shadow-[0_18px_45px_-32px_rgba(0,0,0,0.9)] sm:px-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-300/70 to-transparent" />
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-300">Academic activity engine</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.055em] text-zinc-50 sm:text-4xl">
+              Academic Activity Engine
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">
+              {subject ? `${subject.code} - ${subject.name}` : "Manage assessments"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button onClick={handleCreate} className="gap-2 shrink-0">
+              <PlusCircle className="h-4 w-4" />
+              New Assessment
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Button onClick={handleCreate} className="gap-2">
-            <PlusCircle className="h-4 w-4" />
-            New Assessment
-          </Button>
-        </div>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+        <div className="space-y-5 xl:col-span-8">
           <EvaluationSection subjectId={subjectId} />
         </div>
-        <div>
+        <div className="space-y-5 xl:col-span-4">
           <PredictionCard subjectId={subjectId} />
         </div>
       </div>
 
       {assessments.length === 0 ? (
-        <EmptyState
-          icon={<Target className="h-10 w-10 text-primary" />}
-          title="No active assessments"
-          description="Track your assignments, quizzes, and exams to stay on top of your grades."
-          action={<Button onClick={handleCreate}>Add first assessment</Button>}
-          className="mt-8"
-        />
+        <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8">
+          <DashboardEmptyState
+            icon={<Target className="h-10 w-10" />}
+            title="No active assessments"
+            description="Track your assignments, quizzes, and exams to stay on top of your grades."
+            action={<Button onClick={handleCreate}>Add first assessment</Button>}
+          />
+        </DashboardSurface>
       ) : (
         <Accordion type="multiple" defaultValue={Object.values(AssessmentType)} className="w-full space-y-4">
           {Object.values(AssessmentType).map(type => renderSection(type as AssessmentType))}
@@ -191,6 +199,6 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
         onSubmitResult={handleResSubmit}
         initialData={editingAssessment}
       />
-    </div>
+    </DashboardContainer>
   );
 }

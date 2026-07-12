@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { PlusCircle, Loader2, BookOpen } from "lucide-react";
+import { PlusCircle, BookOpen } from "lucide-react";
 import { Semester, semesterService } from "@/lib/services/semester";
 import { SemesterCard } from "@/components/SemesterCard";
 import { SemesterForm } from "@/components/SemesterForm";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/Shell/EmptyState";
+import { DashboardContainer } from "@/components/ds/DashboardContainer";
+import { DashboardEmptyState } from "@/components/ds/DashboardEmptyState";
+import { DashboardSurface } from "@/components/ds/DashboardSurface";
+import { LoadingState } from "@/components/Shell/LoadingState";
 
 export default function SemestersPage() {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Dialog State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSemester, setEditingSemester] = useState<Semester | null>(null);
 
@@ -46,7 +47,7 @@ export default function SemestersPage() {
     if (confirm("Are you sure you want to delete this semester? All associated data will be lost.")) {
       try {
         await semesterService.deleteSemester(id);
-        fetchSemesters(); // Refresh list
+        fetchSemesters();
       } catch (error) {
         console.error("Failed to delete semester:", error);
       }
@@ -59,56 +60,64 @@ export default function SemestersPage() {
     } else {
       await semesterService.createSemester(data);
     }
-    fetchSemesters(); // Refresh list
+    fetchSemesters();
   };
 
   if (isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardContainer>
+        <LoadingState label="Loading your semesters" />
+      </DashboardContainer>
     );
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Semesters</h1>
-          <p className="text-muted-foreground mt-1">Manage your academic periods and their settings.</p>
+    <DashboardContainer>
+      <header className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[radial-gradient(circle_at_84%_20%,rgba(124,140,255,0.16),transparent_32%),rgba(9,9,11,0.62)] px-5 py-5 shadow-[0_18px_45px_-32px_rgba(0,0,0,0.9)] sm:px-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-300/70 to-transparent" />
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-300">Academic periods</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.055em] text-zinc-50 sm:text-4xl">
+              Semesters
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">Manage your academic periods and their settings.</p>
+          </div>
+          <Button onClick={handleCreate} className="gap-2 shrink-0">
+            <PlusCircle className="h-4 w-4" />
+            New Semester
+          </Button>
         </div>
-        <Button onClick={handleCreate} className="gap-2">
-          <PlusCircle className="h-4 w-4" />
-          New Semester
-        </Button>
-      </div>
+      </header>
 
       {semesters.length === 0 ? (
-        <EmptyState
-          icon={<BookOpen className="h-10 w-10 text-primary" />}
-          title="No semesters found"
-          description="Get started by creating your first semester. All your subjects, assessments, and attendance will be organized within semesters."
-          action={<Button onClick={handleCreate}>Create your first Semester</Button>}
-        />
+        <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8">
+          <DashboardEmptyState
+            icon={<BookOpen className="h-10 w-10" />}
+            title="No semesters found"
+            description="Get started by creating your first semester. All your subjects, assessments, and attendance will be organized within semesters."
+            action={<Button onClick={handleCreate}>Create your first Semester</Button>}
+          />
+        </DashboardSurface>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {semesters.map((semester) => (
-            <SemesterCard 
-              key={semester.id} 
-              semester={semester} 
-              onEdit={handleEdit} 
-              onDelete={handleDelete} 
+            <SemesterCard
+              key={semester.id}
+              semester={semester}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           ))}
         </div>
       )}
 
-      <SemesterForm 
-        open={isFormOpen} 
-        onOpenChange={setIsFormOpen} 
+      <SemesterForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
         onSubmit={handleFormSubmit}
         initialData={editingSemester}
       />
-    </div>
+    </DashboardContainer>
   );
 }

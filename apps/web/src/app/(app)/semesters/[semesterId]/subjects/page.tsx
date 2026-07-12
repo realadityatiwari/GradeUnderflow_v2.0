@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, use } from "react";
-import { PlusCircle, Loader2, BookOpen, ArrowLeft, Search } from "lucide-react";
+import { PlusCircle, BookOpen, ArrowLeft, Search } from "lucide-react";
 import Link from "next/link";
 import { Subject, subjectService } from "@/lib/services/subject";
 import { Semester, semesterService } from "@/lib/services/semester";
@@ -9,7 +9,10 @@ import { SubjectCard } from "@/components/SubjectCard";
 import { SubjectForm } from "@/components/SubjectForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EmptyState } from "@/components/Shell/EmptyState";
+import { DashboardContainer } from "@/components/ds/DashboardContainer";
+import { DashboardEmptyState } from "@/components/ds/DashboardEmptyState";
+import { DashboardSurface } from "@/components/ds/DashboardSurface";
+import { LoadingState } from "@/components/Shell/LoadingState";
 import { SGPASection } from "@/components/SGPASection";
 import { AcademicHealthCard } from "@/components/Prediction/AcademicHealthCard";
 import { TargetSGPACard } from "@/components/Prediction/TargetSGPACard";
@@ -23,7 +26,6 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Dialog State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
 
@@ -61,7 +63,7 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
     if (confirm("Are you sure you want to delete this subject? All associated data will be lost.")) {
       try {
         await subjectService.deleteSubject(id);
-        fetchData(); // Refresh list
+        fetchData();
       } catch (error) {
         console.error("Failed to delete subject:", error);
       }
@@ -74,14 +76,14 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
     } else {
       await subjectService.createSubject(semesterId, data);
     }
-    fetchData(); // Refresh list
+    fetchData();
   };
 
   if (isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <DashboardContainer>
+        <LoadingState label="Loading your subjects" />
+      </DashboardContainer>
     );
   }
 
@@ -91,66 +93,71 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
   );
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-6">
-        <Button variant="ghost" asChild className="-ml-4 text-muted-foreground mb-2">
+    <DashboardContainer>
+      <div className="mb-1">
+        <Button variant="ghost" asChild className="-ml-3 text-zinc-400 hover:text-zinc-200">
           <Link href="/semesters">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
             Back to Semesters
           </Link>
         </Button>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Subjects {semester ? `— ${semester.name}` : ""}
-          </h1>
-          <p className="text-muted-foreground mt-1">Manage your courses for this semester.</p>
-        </div>
-        <div className="flex w-full md:w-auto items-center space-x-2">
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search subjects..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      <header className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[radial-gradient(circle_at_84%_20%,rgba(124,140,255,0.16),transparent_32%),rgba(9,9,11,0.62)] px-5 py-5 shadow-[0_18px_45px_-32px_rgba(0,0,0,0.9)] sm:px-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-300/70 to-transparent" />
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-300">Course catalog</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.055em] text-zinc-50 sm:text-4xl">
+              Subjects {semester ? <span className="text-zinc-500">— {semester.name}</span> : ""}
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">Manage your courses for this semester.</p>
           </div>
-          <Button onClick={handleCreate} className="gap-2 shrink-0">
-            <PlusCircle className="h-4 w-4" />
-            New Subject
-          </Button>
+          <div className="flex w-full md:w-auto items-center gap-2">
+            <div className="relative w-full md:w-56">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                type="search"
+                placeholder="Search subjects..."
+                className="pl-8 h-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Button onClick={handleCreate} className="gap-2 shrink-0">
+              <PlusCircle className="h-4 w-4" />
+              New Subject
+            </Button>
+          </div>
         </div>
-      </div>
+      </header>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+        <div className="space-y-5 xl:col-span-8">
           <AcademicHealthCard semesterId={semesterId} />
           <SGPASection semesterId={semesterId} />
         </div>
-        <div className="space-y-6">
+        <div className="space-y-5 xl:col-span-4">
           <ImprovementOpportunitiesCard semesterId={semesterId} />
           <TargetSGPACard semesterId={semesterId} />
         </div>
       </div>
 
       {subjects.length === 0 ? (
-        <EmptyState
-          icon={<BookOpen className="h-10 w-10 text-primary" />}
-          title="No subjects found"
-          description="Get started by adding your first subject."
-          action={<Button onClick={handleCreate}>Add your first Subject</Button>}
-          className="mt-8"
-        />
+        <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8">
+          <DashboardEmptyState
+            icon={<BookOpen className="h-10 w-10" />}
+            title="No subjects found"
+            description="Get started by adding your first subject."
+            action={<Button onClick={handleCreate}>Add your first Subject</Button>}
+          />
+        </DashboardSurface>
       ) : filteredSubjects.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          No subjects match your search.
-        </div>
+        <DashboardSurface className="flex min-h-[200px] items-center justify-center p-8">
+          <p className="text-sm text-zinc-500">No subjects match your search.</p>
+        </DashboardSurface>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredSubjects.map((subject) => (
             <SubjectCard 
               key={subject.id} 
@@ -168,6 +175,6 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
         onSubmit={handleFormSubmit}
         initialData={editingSubject}
       />
-    </div>
+    </DashboardContainer>
   );
 }

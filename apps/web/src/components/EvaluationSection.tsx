@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Activity } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { EvaluationResultResponse, evaluationService } from "@/lib/services/evaluation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { DashboardSurface } from "@/components/ds/DashboardSurface";
+import { DashboardMetricCard } from "@/components/ds/DashboardMetricCard";
 import { Badge } from "@/components/ui/badge";
+import { Award, Target, GraduationCap } from "lucide-react";
 
 export function EvaluationSection({ subjectId }: { subjectId: string }) {
   const [evaluation, setEvaluation] = useState<EvaluationResultResponse | null>(null);
@@ -26,107 +28,82 @@ export function EvaluationSection({ subjectId }: { subjectId: string }) {
 
   if (isLoading) {
     return (
-      <Card className="mb-8">
-        <CardContent className="flex h-32 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+      <DashboardSurface className="flex min-h-[200px] items-center justify-center p-8">
+        <Loader2 className="h-6 w-6 animate-spin text-indigo-300" />
+      </DashboardSurface>
     );
   }
 
-  if (!evaluation) {
-    return null;
-  }
+  if (!evaluation) return null;
 
   const { internal, external, final } = evaluation;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      {/* Internal Marks Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Internal Evaluation</CardTitle>
-          <CardDescription>Max 30 Marks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold text-primary mb-4">
-            {internal.total} <span className="text-sm font-normal text-muted-foreground">/ 30</span>
-          </div>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Assignments (6)</span>
-              <span className="font-medium">{internal.assignment.contribution}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Quizzes (9)</span>
-              <span className="font-medium">{internal.quiz.contribution}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Surprise Tests (6)</span>
-              <span className="font-medium">{internal.surprise.contribution}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Pre-End (9)</span>
-              <span className="font-medium">{internal.pre_end.contribution}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <DashboardMetricCard
+          label="Internal Evaluation"
+          value={<>{internal.total}<span className="ml-1 text-lg font-medium tracking-normal text-zinc-500">/30</span></>}
+          detail="Max 30 Marks"
+          icon={<Award className="h-4 w-4" />}
+          accent="from-indigo-400 to-violet-500"
+          progress={Math.min(100, (internal.total / 30) * 100)}
+          footer={<span>Internal score</span>}
+        />
 
-      {/* External Marks Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">External Evaluation</CardTitle>
-          <CardDescription>Max 70 Marks (End Semester)</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold text-primary mb-4">
-            {external.marks} <span className="text-sm font-normal text-muted-foreground">/ 70</span>
-          </div>
-          <div className="space-y-2 mt-auto h-full flex flex-col justify-end">
-             <div className="flex justify-between text-sm mb-1">
-               <span className="text-muted-foreground">Percentage</span>
-               <span className="font-medium">{external.percentage.toFixed(1)}%</span>
-             </div>
-             <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
-               <div 
-                 className="bg-primary h-full rounded-full transition-all" 
-                 style={{ width: `${external.percentage}%` }}
-               />
-             </div>
-          </div>
-        </CardContent>
-      </Card>
+        <DashboardMetricCard
+          label="External Evaluation"
+          value={<>{external.marks}<span className="ml-1 text-lg font-medium tracking-normal text-zinc-500">/70</span></>}
+          detail={`${external.percentage.toFixed(1)}% score`}
+          icon={<Target className="h-4 w-4" />}
+          accent="from-sky-400 to-blue-600"
+          progress={Math.min(100, external.percentage)}
+          footer={<span>External score</span>}
+        />
 
-      {/* Final Marks Card */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-lg">Final Result</CardTitle>
-              <CardDescription>Out of 100 Marks</CardDescription>
-            </div>
-            <Badge variant={final.passed ? "default" : "destructive"} className="px-3 py-1 text-sm">
+        <DashboardMetricCard
+          label="Final Result"
+          value={<>{final.marks}<span className="ml-1 text-lg font-medium tracking-normal text-zinc-500">/100</span></>}
+          detail={`Grade ${final.grade} (${final.grade_point})`}
+          icon={<GraduationCap className="h-4 w-4" />}
+          accent={final.passed ? "from-emerald-400 to-teal-500" : "from-rose-400 to-red-500"}
+          progress={final.marks}
+          footer={
+            <Badge variant={final.passed ? "default" : "destructive"} className="text-[9px] uppercase tracking-[0.1em]">
               {final.passed ? "PASS" : "FAIL"}
             </Badge>
+          }
+        />
+      </div>
+
+      <DashboardSurface>
+        <header className="flex items-start justify-between gap-3 border-b border-white/[0.07] px-5 py-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-300">Internal breakdown</p>
+            <h2 className="mt-1 text-lg font-semibold tracking-[-0.03em] text-zinc-50">Evaluation Details</h2>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-4xl font-black text-primary mb-6">
-            {final.marks}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-background rounded-lg p-3 border">
-              <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Grade</div>
-              <div className="text-2xl font-bold">{final.grade}</div>
+        </header>
+        <div className="p-5 sm:px-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3.5 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-zinc-500">Assignments (6)</p>
+              <p className="mt-1.5 text-sm font-semibold tabular-nums text-zinc-100">{internal.assignment.contribution}</p>
             </div>
-            <div className="bg-background rounded-lg p-3 border">
-              <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Grade Point</div>
-              <div className="text-2xl font-bold">{final.grade_point}</div>
+            <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3.5 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-zinc-500">Quizzes (9)</p>
+              <p className="mt-1.5 text-sm font-semibold tabular-nums text-zinc-100">{internal.quiz.contribution}</p>
+            </div>
+            <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3.5 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-zinc-500">Surprise Tests (6)</p>
+              <p className="mt-1.5 text-sm font-semibold tabular-nums text-zinc-100">{internal.surprise.contribution}</p>
+            </div>
+            <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3.5 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-zinc-500">Pre-End (9)</p>
+              <p className="mt-1.5 text-sm font-semibold tabular-nums text-zinc-100">{internal.pre_end.contribution}</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </DashboardSurface>
     </div>
   );
 }
