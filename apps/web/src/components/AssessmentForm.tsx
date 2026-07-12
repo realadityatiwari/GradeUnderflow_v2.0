@@ -116,7 +116,9 @@ export function AssessmentForm({
           remarks: initialData.result.remarks ?? undefined,
         });
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab("definition");
+       
       setApiError(null);
     } else if (!open) {
       defForm.reset({
@@ -131,7 +133,9 @@ export function AssessmentForm({
         obtained_marks: undefined,
         remarks: undefined,
       });
+       
       setActiveTab("definition");
+       
       setApiError(null);
     }
   }, [initialData, open, defForm, resForm]);

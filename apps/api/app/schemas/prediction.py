@@ -4,7 +4,6 @@ from typing import List, Optional
 from uuid import UUID
 from enum import Enum
 from app.schemas.evaluation import EvaluationResultResponse
-from app.schemas.sgpa import SGPACalculationResponse
 
 class PredictionSource(str, Enum):
     SUBJECT_AVERAGE = "SUBJECT_AVERAGE"

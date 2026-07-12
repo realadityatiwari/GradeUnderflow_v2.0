@@ -55,6 +55,7 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
   }, [subjectId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 

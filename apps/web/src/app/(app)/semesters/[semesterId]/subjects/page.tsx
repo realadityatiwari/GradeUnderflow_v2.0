@@ -24,6 +24,7 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
   const [semester, setSemester] = useState<Semester | null>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -31,6 +32,7 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const [semData, subData] = await Promise.all([
         semesterService.getSemester(semesterId),
@@ -40,12 +42,14 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
       setSubjects(subData);
     } catch (error) {
       console.error("Failed to load subjects:", error);
+      setError("Failed to load subjects. Please try again later.");
     } finally {
       setIsLoading(false);
     }
   }, [semesterId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
@@ -83,6 +87,16 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
     return (
       <DashboardContainer>
         <LoadingState label="Loading your subjects" />
+      </DashboardContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardContainer>
+        <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8 text-center text-rose-400">
+          <p>{error}</p>
+        </DashboardSurface>
       </DashboardContainer>
     );
   }

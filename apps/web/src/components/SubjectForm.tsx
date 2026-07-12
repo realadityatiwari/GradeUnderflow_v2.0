@@ -81,6 +81,7 @@ export function SubjectForm({
         faculty_name: initialData.faculty_name || "",
         color: initialData.color || "",
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setApiError(null);
     } else if (!open) {
       form.reset({
@@ -91,6 +92,7 @@ export function SubjectForm({
         faculty_name: "",
         color: "",
       });
+       
       setApiError(null);
     }
   }, [initialData, open, form]);

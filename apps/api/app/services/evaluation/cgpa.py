@@ -33,9 +33,9 @@ def calculate_cgpa(db: Session, user_id: UUID) -> CGPACalculationResponse:
         
         semester_summaries.append(
             SemesterCGPASummary(
-                id=semester.id,
-                name=semester.name,
-                academic_year=semester.academic_year,
+                id=semester.id, # type: ignore
+                name=str(semester.name),
+                academic_year=str(semester.academic_year),
                 sgpa=sgpa_response.semester.sgpa,
                 total_credits=sem_credits,
                 earned_credit_points=sem_credit_points

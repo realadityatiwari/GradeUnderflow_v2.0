@@ -5,7 +5,9 @@ from app.models.subject import Subject
 from app.services.evaluation.engine import evaluate_subject
 from app.schemas.sgpa import SGPACalculationResponse, SemesterSGPASummary, SubjectSGPASummary
 
-def calculate_sgpa_from_evaluations(subjects: list[Subject], evaluations_map: dict[UUID, any]) -> SGPACalculationResponse:
+from typing import Any
+
+def calculate_sgpa_from_evaluations(subjects: list[Subject], evaluations_map: dict[UUID, Any]) -> SGPACalculationResponse:
     """
     Pure function to calculate SGPA from a list of subjects and their corresponding evaluations.
     evaluations_map is a dictionary mapping subject_id to EvaluationResultResponse.
@@ -34,10 +36,10 @@ def calculate_sgpa_from_evaluations(subjects: list[Subject], evaluations_map: di
         
         subject_summaries.append(
             SubjectSGPASummary(
-                id=subject.id,
-                code=subject.code,
-                name=subject.name,
-                credits=credits,
+                id=subject.id, # type: ignore
+                code=str(subject.code),
+                name=str(subject.name),
+                credits=int(credits), # type: ignore
                 grade=grade,
                 grade_point=grade_point,
                 credit_points=credit_points
@@ -47,13 +49,13 @@ def calculate_sgpa_from_evaluations(subjects: list[Subject], evaluations_map: di
     # Calculate SGPA
     sgpa = 0.0
     if total_credits > 0:
-        sgpa = round(total_earned_credit_points / total_credits, 2)
+        sgpa = round(total_earned_credit_points / total_credits, 2) # type: ignore
         
     return SGPACalculationResponse(
         semester=SemesterSGPASummary(
             sgpa=sgpa,
-            total_credits=total_credits,
-            earned_credit_points=round(total_earned_credit_points, 2)
+            total_credits=int(total_credits), # type: ignore
+            earned_credit_points=round(total_earned_credit_points, 2) # type: ignore
         ),
         subjects=subject_summaries
     )

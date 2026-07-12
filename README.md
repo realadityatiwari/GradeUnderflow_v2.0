@@ -15,7 +15,7 @@ GradeUnderflow follows a strictly decoupled service-oriented architecture.
 - **Backend:** FastAPI (Python) enforcing rigid separation between the `Router`, `Service (Engines)`, and `Repository` layers.
 - **Database:** PostgreSQL interacting through SQLAlchemy ORM and Pydantic schemas.
 
-*For detailed architectural documentation, see [Architecture.md](docs/Architecture.md).*
+*For detailed architectural documentation, see [Architecture.md](docs/architecture.md).*
 
 ## Tech Stack
 - **Web App:** Next.js, React, Tailwind CSS, Lucide Icons, Recharts, Framer Motion
@@ -70,9 +70,9 @@ GradeUnderflow follows a strictly decoupled service-oriented architecture.
    Visit `http://localhost:3000` to access the application.
 
 ## Documentation
-- [Architecture Overview](docs/Architecture.md)
-- [Database Schema](docs/Database.md)
-- [API Endpoints](docs/API.md)
+- [Architecture Overview](docs/architecture.md)
+- [Database Schema](docs/database.md)
+- [API Endpoints](docs/api.md)
 - [Future Scope](docs/FutureScope.md)
 
 ## License

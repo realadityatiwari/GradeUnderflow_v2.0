@@ -32,7 +32,7 @@ export default function LandingPage() {
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
               Because your GPA <br className="hidden md:block"/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-500">
-                shouldn't crash.
+                shouldn&apos;t crash.
               </span>
             </h1>
             <p className="mx-auto max-w-2xl text-lg md:text-xl text-zinc-400 mb-10 leading-relaxed">

@@ -35,6 +35,7 @@ export function WhatIfDialog({ semesterId, assessmentId, currentMarks, maxMarks,
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!open) setResult(null);
   }, [open]);
 

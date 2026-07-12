@@ -73,8 +73,8 @@ def get_subject_analytics(db: Session, semester_id: UUID, subjects: List[Subject
         avg_grade = "F"
     
     return SubjectAnalyticsData(
-        highest_performing_subject=highest,
-        lowest_performing_subject=lowest,
+        highest_performing_subject=highest, # type: ignore
+        lowest_performing_subject=lowest, # type: ignore
         average_percentage=avg_percentage,
         average_grade=avg_grade,
         average_grade_point=avg_gp,
@@ -83,5 +83,5 @@ def get_subject_analytics(db: Session, semester_id: UUID, subjects: List[Subject
         external_marks_earned=ext_earned,
         external_marks_total=ext_total,
         completion_percentage=completion,
-        total_credits=credits
+        total_credits=int(credits) # type: ignore
     )

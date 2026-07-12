@@ -22,7 +22,7 @@ class AssessmentService:
         assessment = assessment_repo.get_by_id(db, assessment_id)
         if not assessment:
             raise HTTPException(status_code=404, detail="Assessment not found")
-        self._verify_subject_ownership(db, assessment.subject_id, user_id)
+        self._verify_subject_ownership(db, assessment.subject_id, user_id) # type: ignore
         return assessment
 
     def _check_exam_singularity(self, db: Session, subject_id: UUID, assessment_type: AssessmentType) -> None:

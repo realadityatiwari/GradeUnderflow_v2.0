@@ -14,22 +14,26 @@ import { LoadingState } from "@/components/Shell/LoadingState";
 export default function SemestersPage() {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSemester, setEditingSemester] = useState<Semester | null>(null);
 
   const fetchSemesters = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const data = await semesterService.getSemesters();
       setSemesters(data);
     } catch (error) {
       console.error("Failed to load semesters:", error);
+      setError("Failed to load semesters. Please try again later.");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSemesters();
   }, [fetchSemesters]);
 
@@ -67,6 +71,16 @@ export default function SemestersPage() {
     return (
       <DashboardContainer>
         <LoadingState label="Loading your semesters" />
+      </DashboardContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardContainer>
+        <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8 text-center text-rose-400">
+          <p>{error}</p>
+        </DashboardSurface>
       </DashboardContainer>
     );
   }

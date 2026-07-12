@@ -19,8 +19,24 @@ from app.services.prediction.prediction import get_subject_prediction
 from app.services.prediction.target import calculate_required_external, calculate_target_sgpa
 from app.services.prediction.simulation import simulate_what_if
 from app.services.prediction.health import get_academic_health
+from fastapi import HTTPException
+from app.repositories.subject import subject_repo
+from app.repositories.semester import semester_repo
 
 router = APIRouter()
+
+def _verify_subject_ownership(db: Session, subject_id: UUID, user_id: UUID):
+    subject = subject_repo.get_by_id(db, subject_id)
+    if not subject:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    semester = semester_repo.get_by_id(db, subject.semester_id, user_id) # type: ignore
+    if not semester:
+        raise HTTPException(status_code=404, detail="Subject not found or does not belong to user.")
+
+def _verify_semester_ownership(db: Session, semester_id: UUID, user_id: UUID):
+    semester = semester_repo.get_by_id(db, semester_id, user_id)
+    if not semester:
+        raise HTTPException(status_code=404, detail="Semester not found or does not belong to user.")
 
 @router.get("/subjects/{subject_id}/prediction", response_model=SubjectPredictionResponse)
 def get_prediction(
@@ -29,6 +45,7 @@ def get_prediction(
     current_user: User = Depends(get_current_user)
 ):
     """ Get predicted grade and missing assessment forecasts for a subject. """
+    _verify_subject_ownership(db, subject_id, current_user.id)
     return get_subject_prediction(db, subject_id)
 
 @router.post("/subjects/{subject_id}/target", response_model=TargetGradeResponse)
@@ -39,6 +56,7 @@ def calculate_target_grade(
     current_user: User = Depends(get_current_user)
 ):
     """ Calculate external marks required to hit a specific target grade. """
+    _verify_subject_ownership(db, subject_id, current_user.id)
     return calculate_required_external(db, subject_id, request.target_grade)
 
 
@@ -50,6 +68,7 @@ def calculate_target_sgpa_endpoint(
     current_user: User = Depends(get_current_user)
 ):
     """ Calculate required metrics to hit a target SGPA. """
+    _verify_semester_ownership(db, semester_id, current_user.id)
     return calculate_target_sgpa(db, semester_id, request.target_sgpa)
 
 
@@ -61,6 +80,7 @@ def simulate_sgpa(
     current_user: User = Depends(get_current_user)
 ):
     """ Simulates SGPA based on hypothetical overridden marks without touching DB. """
+    _verify_semester_ownership(db, semester_id, current_user.id)
     return simulate_what_if(db, semester_id, request)
 
 
@@ -71,4 +91,5 @@ def get_health(
     current_user: User = Depends(get_current_user)
 ):
     """ Generates Academic Health composite score and improvement opportunities. """
+    _verify_semester_ownership(db, semester_id, current_user.id)
     return get_academic_health(db, semester_id)

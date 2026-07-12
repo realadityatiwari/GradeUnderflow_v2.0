@@ -111,7 +111,7 @@ def get_dashboard_summary(db: Session, user_id: UUID) -> DashboardResponse:
     # 5. Build Sub-Responses
     header = DashboardHeader(
         greeting="Welcome Back",
-        semester=current_semester.name,
+        semester=str(current_semester.name),
         completion=int((completed_assessments / total_assessments * 100) if total_assessments > 0 else 0)
     )
     
@@ -122,11 +122,11 @@ def get_dashboard_summary(db: Session, user_id: UUID) -> DashboardResponse:
     overview = OverviewData(
         current_sgpa=sgpa_data.semester.sgpa,
         current_cgpa=cgpa_data.cgpa,
-        academic_health=int(round(health_data_api.health_score)),
+        academic_health=round(health_data_api.health_score),
         prediction_confidence="MEDIUM",
         internal_marks_earned=internal_earned,
         total_internal_marks=internal_max,
-        semester_credits=current_semester.total_credits if hasattr(current_semester, "total_credits") else sum(s.credits for s in subjects)
+        semester_credits=current_semester.total_credits if hasattr(current_semester, "total_credits") else sum(s.credits for s in subjects) # type: ignore
     )
     
     prediction = PredictionData(
@@ -138,10 +138,10 @@ def get_dashboard_summary(db: Session, user_id: UUID) -> DashboardResponse:
     )
     
     health_ui = HealthData(
-        score=int(round(health_data_api.health_score)),
+        score=round(health_data_api.health_score),
         status=health_data_api.health_status,
         color="#10B981" if health_data_api.health_status == "Excellent" else "#F59E0B" if health_data_api.health_status == "Good" else "#EF4444",
-        progress=int(round(health_data_api.health_score))
+        progress=round(health_data_api.health_score)
     )
     
     semester_prog = SemesterProgressData(

@@ -9,21 +9,21 @@ from app.models.enums import AssessmentType
 class AssessmentRepository:
     def create(self, db: Session, obj_in: AssessmentCreate, subject_id: UUID) -> Assessment:
         db_obj = Assessment(
-            subject_id=subject_id,
-            assessment_type=obj_in.assessment_type,
-            assessment_category=obj_in.assessment_category,
-            title=obj_in.title,
-            max_marks=obj_in.max_marks,
-            weightage=obj_in.weightage,
-            due_date=obj_in.due_date,
-            conducted_on=obj_in.conducted_on,
-            display_order=obj_in.display_order,
-            is_required=obj_in.is_required,
+            subject_id=subject_id, # type: ignore
+            assessment_type=obj_in.assessment_type, # type: ignore
+            assessment_category=obj_in.assessment_category, # type: ignore
+            title=obj_in.title, # type: ignore
+            max_marks=obj_in.max_marks, # type: ignore
+            weightage=obj_in.weightage, # type: ignore
+            due_date=obj_in.due_date, # type: ignore
+            conducted_on=obj_in.conducted_on, # type: ignore
+            display_order=obj_in.display_order, # type: ignore
+            is_required=obj_in.is_required, # type: ignore
         )
         db.add(db_obj)
         
         # Auto-create AssessmentResult
-        result_obj = AssessmentResult(assessment=db_obj)
+        result_obj = AssessmentResult(assessment=db_obj) # type: ignore
         db.add(result_obj)
         
         db.commit()

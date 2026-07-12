@@ -21,10 +21,10 @@ def get_prediction_for_assessment(db: Session, assessment: Assessment, subject_a
         total_max = sum(a.max_marks for a in completed_assessments)
         if total_max > 0:
             subject_avg_percentage = total_obtained / total_max
-            return round(subject_avg_percentage * assessment.max_marks, 2), PredictionSource.SUBJECT_AVERAGE
+            return round(subject_avg_percentage * assessment.max_marks, 2), PredictionSource.SUBJECT_AVERAGE # type: ignore
             
     # Fallback to default
-    return round(DEFAULT_PREDICTION_PERCENTAGE * assessment.max_marks, 2), PredictionSource.DEFAULT
+    return round(DEFAULT_PREDICTION_PERCENTAGE * assessment.max_marks, 2), PredictionSource.DEFAULT # type: ignore
 
 
 def calculate_prediction_confidence(total_assessments: int, completed_assessments: int) -> tuple[float, PredictionConfidence]:
@@ -48,27 +48,27 @@ def calculate_prediction_confidence(total_assessments: int, completed_assessment
 def clone_assessment(assessment: Assessment) -> Assessment:
     """ Creates an in-memory clone of an assessment to prevent DB modification during simulation. """
     cloned = Assessment(
-        id=assessment.id,
-        subject_id=assessment.subject_id,
-        assessment_type=assessment.assessment_type,
-        assessment_category=assessment.assessment_category,
-        title=assessment.title,
-        max_marks=assessment.max_marks,
-        weightage=assessment.weightage,
-        is_required=assessment.is_required
+        id=assessment.id, # type: ignore
+        subject_id=assessment.subject_id, # type: ignore
+        assessment_type=assessment.assessment_type, # type: ignore
+        assessment_category=assessment.assessment_category, # type: ignore
+        title=assessment.title, # type: ignore
+        max_marks=assessment.max_marks, # type: ignore
+        weightage=assessment.weightage, # type: ignore
+        is_required=assessment.is_required # type: ignore
     )
     
     if assessment.result:
         cloned.result = AssessmentResult(
-            assessment_id=cloned.id,
-            status=assessment.result.status,
-            obtained_marks=assessment.result.obtained_marks
+            assessment_id=cloned.id, # type: ignore
+            status=assessment.result.status, # type: ignore
+            obtained_marks=assessment.result.obtained_marks # type: ignore
         )
     else:
         cloned.result = AssessmentResult(
-            assessment_id=cloned.id,
-            status=AssessmentStatus.NOT_STARTED,
-            obtained_marks=None
+            assessment_id=cloned.id, # type: ignore
+            status=AssessmentStatus.NOT_STARTED, # type: ignore
+            obtained_marks=None # type: ignore
         )
         
     return cloned
