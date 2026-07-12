@@ -10,6 +10,10 @@ import { SubjectForm } from "@/components/SubjectForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/Shell/EmptyState";
+import { SGPASection } from "@/components/SGPASection";
+import { AcademicHealthCard } from "@/components/Prediction/AcademicHealthCard";
+import { TargetSGPACard } from "@/components/Prediction/TargetSGPACard";
+import { ImprovementOpportunitiesCard } from "@/components/Prediction/ImprovementOpportunitiesCard";
 
 export default function SubjectsPage({ params }: { params: Promise<{ semesterId: string }> }) {
   const { semesterId } = use(params);
@@ -119,6 +123,17 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
             <PlusCircle className="h-4 w-4" />
             New Subject
           </Button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <AcademicHealthCard semesterId={semesterId} />
+          <SGPASection semesterId={semesterId} />
+        </div>
+        <div className="space-y-6">
+          <ImprovementOpportunitiesCard semesterId={semesterId} />
+          <TargetSGPACard semesterId={semesterId} />
         </div>
       </div>
 

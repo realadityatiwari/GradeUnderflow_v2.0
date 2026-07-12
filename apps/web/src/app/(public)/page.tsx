@@ -36,8 +36,8 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className="mx-auto max-w-2xl text-lg md:text-xl text-zinc-400 mb-10 leading-relaxed">
-              The ultimate academic tracking platform for engineering students. 
-              Manage your semesters, track assignments, and predict your final SGPA with precision.
+              The ultimate academic intelligence platform for engineering students. 
+              Manage your semesters, predict your final SGPA with precision, and uncover deep historical insights.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-8 h-14 text-lg">
@@ -58,7 +58,7 @@ export default function LandingPage() {
               <p className="text-zinc-400 max-w-xl mx-auto">GradeUnderflow provides a comprehensive suite of tools designed specifically for the modern student workflow.</p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {[
                 {
                   icon: <BookOpen className="h-8 w-8 text-indigo-400 mb-4" />,
@@ -67,13 +67,18 @@ export default function LandingPage() {
                 },
                 {
                   icon: <LayoutDashboard className="h-8 w-8 text-violet-400 mb-4" />,
-                  title: "Activity Engine",
-                  description: "Log every assignment, quiz, surprise test, and exam. Never lose track of your internal marks again."
+                  title: "Evaluation Engine",
+                  description: "Log every assignment, quiz, surprise test, and exam. We'll automatically calculate your internal and external marks."
                 },
                 {
                   icon: <BarChart3 className="h-8 w-8 text-fuchsia-400 mb-4" />,
                   title: "SGPA Prediction",
-                  description: "Calculate your expected SGPA dynamically based on your current performance and university rubrics. (Coming Soon)"
+                  description: "Calculate your expected SGPA dynamically and find exactly what marks you need in the finals to achieve your targets."
+                },
+                {
+                  icon: <GraduationCap className="h-8 w-8 text-emerald-400 mb-4" />,
+                  title: "Deep Analytics",
+                  description: "Visualize your academic health with performance trends, grade distributions, and targeted improvement analysis."
                 }
               ].map((feature, i) => (
                 <div key={i} className="bg-zinc-950/50 border border-zinc-800 p-8 rounded-3xl hover:border-indigo-500/50 transition-colors">

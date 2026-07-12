@@ -11,15 +11,16 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center shadow-sm", className)}>
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-4">
+    <div className={cn("relative flex min-h-[300px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border/80 bg-card/50 p-8 text-center shadow-sm", className)}>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.08),transparent_42%)] pointer-events-none" />
+      <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
         {icon}
       </div>
-      <h2 className="text-xl font-semibold mb-2">{title}</h2>
-      <p className="text-muted-foreground mb-6 max-w-sm">
+      <h2 className="relative text-lg font-semibold tracking-tight text-foreground">{title}</h2>
+      <p className="relative mb-6 mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
         {description}
       </p>
-      {action && <div>{action}</div>}
+      {action && <div className="relative">{action}</div>}
     </div>
   );
 }

@@ -15,6 +15,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { EmptyState } from "@/components/Shell/EmptyState";
+import { EvaluationSection } from "@/components/EvaluationSection";
+import { PredictionCard } from "@/components/Prediction/PredictionCard";
 
 const TYPE_LABELS: Record<AssessmentType, string> = {
   [AssessmentType.ASSIGNMENT]: "Assignments",
@@ -112,6 +114,7 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
               <AssessmentCard 
                 key={assessment.id}
                 assessment={assessment}
+                semesterId={subject?.semester_id}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
@@ -155,6 +158,15 @@ export default function AssessmentsPage({ params }: { params: Promise<{ subjectI
             <PlusCircle className="h-4 w-4" />
             New Assessment
           </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2">
+          <EvaluationSection subjectId={subjectId} />
+        </div>
+        <div>
+          <PredictionCard subjectId={subjectId} />
         </div>
       </div>
 

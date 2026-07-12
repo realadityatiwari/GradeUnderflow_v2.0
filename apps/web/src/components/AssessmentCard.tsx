@@ -10,14 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
+import { WhatIfDialog } from "@/components/Prediction/WhatIfDialog";
 
 interface AssessmentCardProps {
   assessment: Assessment;
+  semesterId?: string;
   onEdit: (assessment: Assessment) => void;
   onDelete: (id: string) => void;
 }
 
-export function AssessmentCard({ assessment, onEdit, onDelete }: AssessmentCardProps) {
+export function AssessmentCard({ assessment, semesterId, onEdit, onDelete }: AssessmentCardProps) {
   const result = assessment.result;
   const status = result?.status || AssessmentStatus.NOT_STARTED;
   
@@ -105,6 +107,18 @@ export function AssessmentCard({ assessment, onEdit, onDelete }: AssessmentCardP
             </div>
           )}
         </div>
+        
+        {semesterId && status !== AssessmentStatus.CHECKED && (
+          <div className="mt-4 flex justify-end">
+             <WhatIfDialog 
+                semesterId={semesterId} 
+                assessmentId={assessment.id} 
+                currentMarks={result?.obtained_marks || null} 
+                maxMarks={assessment.max_marks} 
+                title={assessment.title}
+             />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

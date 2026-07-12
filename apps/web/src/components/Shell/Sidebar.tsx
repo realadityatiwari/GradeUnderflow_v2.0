@@ -27,9 +27,9 @@ const navItems = [
   },
   {
     title: "Analytics",
-    href: "#",
+    href: "/analytics",
     icon: BarChart3,
-    disabled: true,
+    disabled: false,
   },
   {
     title: "Reports",
@@ -49,8 +49,8 @@ export function SidebarContent() {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full flex-col bg-zinc-950 text-zinc-100 border-r border-zinc-900">
-      <div className="flex h-14 items-center border-b border-zinc-900 px-6 font-semibold">
+    <div className="flex h-full flex-col bg-zinc-950/40 backdrop-blur-xl text-zinc-100 border-r border-white/5">
+      <div className="flex h-14 items-center border-b border-white/5 px-6 font-semibold">
         <Link href="/dashboard" className="flex items-center gap-2 transition-colors hover:text-indigo-400">
           <GraduationCap className="h-6 w-6 text-indigo-500" />
           <span className="text-lg tracking-tight">GradeUnderflow</span>
