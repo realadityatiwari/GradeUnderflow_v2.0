@@ -146,42 +146,47 @@ export default function SubjectsPage({ params }: { params: Promise<{ semesterId:
         </div>
       </header>
       
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12 items-start">
         <div className="space-y-5 xl:col-span-8">
           <AcademicHealthCard semesterId={semesterId} />
           <SGPASection semesterId={semesterId} />
         </div>
-        <div className="space-y-5 xl:col-span-4">
-          <ImprovementOpportunitiesCard semesterId={semesterId} />
-          <TargetSGPACard semesterId={semesterId} />
+
+        <div className="xl:col-span-4 xl:row-span-2 xl:self-start">
+          <div className="space-y-5 xl:sticky xl:top-5">
+            <ImprovementOpportunitiesCard semesterId={semesterId} />
+            <TargetSGPACard semesterId={semesterId} />
+          </div>
+        </div>
+
+        <div className="xl:col-span-8">
+          {subjects.length === 0 ? (
+            <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8">
+              <DashboardEmptyState
+                icon={<BookOpen className="h-10 w-10" />}
+                title="No subjects found"
+                description="Get started by adding your first subject."
+                action={<Button onClick={handleCreate}>Add your first Subject</Button>}
+              />
+            </DashboardSurface>
+          ) : filteredSubjects.length === 0 ? (
+            <DashboardSurface className="flex min-h-[200px] items-center justify-center p-8">
+              <p className="text-sm text-zinc-500">No subjects match your search.</p>
+            </DashboardSurface>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredSubjects.map((subject) => (
+                <SubjectCard 
+                  key={subject.id} 
+                  subject={subject} 
+                  onEdit={handleEdit} 
+                  onDelete={handleDelete} 
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {subjects.length === 0 ? (
-        <DashboardSurface className="flex min-h-[300px] items-center justify-center p-8">
-          <DashboardEmptyState
-            icon={<BookOpen className="h-10 w-10" />}
-            title="No subjects found"
-            description="Get started by adding your first subject."
-            action={<Button onClick={handleCreate}>Add your first Subject</Button>}
-          />
-        </DashboardSurface>
-      ) : filteredSubjects.length === 0 ? (
-        <DashboardSurface className="flex min-h-[200px] items-center justify-center p-8">
-          <p className="text-sm text-zinc-500">No subjects match your search.</p>
-        </DashboardSurface>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {filteredSubjects.map((subject) => (
-            <SubjectCard 
-              key={subject.id} 
-              subject={subject} 
-              onEdit={handleEdit} 
-              onDelete={handleDelete} 
-            />
-          ))}
-        </div>
-      )}
 
       <SubjectForm 
         open={isFormOpen} 
